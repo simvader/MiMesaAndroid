@@ -60,7 +60,8 @@ fun MimesaApp() {
                 },
                 onNavigateToCart = {
                     navController.navigate("cart")
-                }
+                },
+                navController
             )
         }
         composable("cart") {

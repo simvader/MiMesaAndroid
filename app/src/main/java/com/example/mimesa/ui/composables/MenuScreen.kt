@@ -38,27 +38,22 @@ fun MenuScreen(
                     IconButton(onClick = {navController.navigateUp()}) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
+                },
+                actions = {
+                    Button(onClick = onHelpRequest) {
+                        Text("Help")
+                    }
+                    Button(onClick = onRequestOrder) {
+                        Text("Order")
+                    }
+                    Button(onClick = onNavigateToCart) {
+                        Text("Cart")
+                    }
                 }
             )
         }
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Button(onClick = onHelpRequest) {
-                    Text("Help")
-                }
-                Button(onClick = onRequestOrder) {
-                    Text("Order")
-                }
-                Button(onClick = onNavigateToCart) {
-                    Text("Cart")
-                }
-            }
 
             Text(
                 text = "Menu",

@@ -13,6 +13,7 @@ import com.example.mimesa.ui.composables.CartScreen
 import com.example.mimesa.ui.theme.MiMesaTheme
 import com.example.mimesa.ui.composables.MenuScreen
 import com.example.mimesa.ui.composables.PaymentScreen
+import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +36,8 @@ fun PreviewMimesaApp() {
 @Composable
 fun MimesaApp() {
     val navController = rememberNavController()
+    val rtDB = FirebaseDatabase.getInstance()
+    val dbRef = rtDB.getReference("message")
     // Example categories for the menu
     val categories = listOf("Food", "Drinks")
 
@@ -51,8 +54,19 @@ fun MimesaApp() {
                     println("Removed $itemName from cart")
                 },
                 onHelpRequest = {
-                    // Handle help request logic here
-                    println("Help requested")
+                    // Push a "Help" notification to Firebase
+                    val helpNotification = mapOf(
+                        "type" to "help_request",
+                        "message" to "User has requested help",
+                        "timestamp" to System.currentTimeMillis()
+                    )
+                    dbRef.child("notifications").push().setValue(helpNotification)
+                        .addOnSuccessListener {
+                            println("Help notification sent successfully")
+                        }
+                        .addOnFailureListener {
+                            println("Failed to send help notification: ${it.message}")
+                        }
                 },
                 onRequestOrder = {
                     // Handle order request logic here
@@ -74,7 +88,6 @@ fun MimesaApp() {
         composable("checkout") {
             PaymentScreen(listOf("a", "b"), 10.0, {}, navController)
         }
-
     }
 }
 

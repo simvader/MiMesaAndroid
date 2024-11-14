@@ -10,9 +10,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mimesa.ui.composables.CartScreen
+import com.example.mimesa.ui.composables.LoginScreen
 import com.example.mimesa.ui.theme.MiMesaTheme
 import com.example.mimesa.ui.composables.MenuScreen
 import com.example.mimesa.ui.composables.PaymentScreen
+import com.example.mimesa.ui.composables.RegisterScreen
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : ComponentActivity() {
@@ -41,7 +44,8 @@ fun MimesaApp() {
     // Example categories for the menu
     val categories = listOf("Food", "Drinks")
 
-    NavHost(navController = navController, startDestination = "menu") {
+
+    NavHost(navController = navController, startDestination = "login") {
         composable("menu") {
             MenuScreen(
                 categories = categories,
@@ -88,10 +92,63 @@ fun MimesaApp() {
         composable("checkout") {
             PaymentScreen(listOf("a", "b"), 10.0, {}, navController)
         }
+
+        composable("login") {
+            LoginScreen(
+                onLoginSuccess = {
+                    navController.navigate("menu")
+                },
+                onRegisterClicked = {
+                    navController.navigate("register")
+                }
+            )
+        }
+
+        composable("register") {
+            RegisterScreen(
+                onRegisterSuccess = {
+                    navController.navigate("menu")
+                }
+            )
+        }
     }
 }
 
+fun authenticateUser(
+    email: String,
+    password: String,
+    onAuthenticated: () -> Unit,
+    onAuthenticationError: (String) -> Unit
+) {
+    val auth = FirebaseAuth.getInstance()
+    auth.signInWithEmailAndPassword(email, password)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                onAuthenticated()
+            } else {
+                onAuthenticationError(task.exception?.message ?: "Authentication failed")
+            }
+        }
+}
 
 
+fun registerUser(
+    email: String,
+    password: String,
+    onSuccess: () -> Unit,
+    onError: (String) -> Unit
+) {
+    val auth = FirebaseAuth.getInstance()
+
+    auth.createUserWithEmailAndPassword(email, password)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                onSuccess()
+            } else {
+                onError(task.exception?.message ?: "Error desconocido")
+            }
+
+        }
+}
 
 

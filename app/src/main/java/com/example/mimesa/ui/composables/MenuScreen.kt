@@ -30,28 +30,12 @@ fun MenuScreen(
     onNavigateToCart: () -> Unit,
     navController: NavController
 ) {
-    Scaffold (
-        topBar = {
-            TopAppBar(
-                title = { Text("Menu") },
-                navigationIcon = {
-                    IconButton(onClick = {navController.navigateUp()}) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                actions = {
-                    Button(onClick = onHelpRequest) {
-                        Text("Help")
-                    }
-                    Button(onClick = onRequestOrder) {
-                        Text("Order")
-                    }
-                    Button(onClick = onNavigateToCart) {
-                        Text("Cart")
-                    }
-                }
-            )
-        }
+    MimesaScaffold(
+        title = "Menu",
+        navController = navController,
+        onHelpRequest = onHelpRequest,
+        onRequestOrder = onRequestOrder,
+        onNavigateToCart = onNavigateToCart
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
 

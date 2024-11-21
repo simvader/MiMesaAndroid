@@ -1,11 +1,19 @@
 package com.example.mimesa
 
+import android.content.Context
 import android.os.Bundle
+import android.view.View
+import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentContainerView
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -15,10 +23,16 @@ import com.example.mimesa.ui.theme.MiMesaTheme
 import com.example.mimesa.ui.composables.MenuScreen
 import com.example.mimesa.ui.composables.PaymentScreen
 import com.example.mimesa.ui.composables.RegisterScreen
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -79,9 +93,13 @@ fun MimesaApp() {
                 onNavigateToCart = {
                     navController.navigate("cart")
                 },
+                onNavigateToMap = {
+                    navController.navigate("map")
+                },
                 navController
             )
         }
+
         composable("cart") {
             CartScreen(
                 onBackToMenu = { navController.navigateUp() },
@@ -111,7 +129,48 @@ fun MimesaApp() {
                 }
             )
         }
+
+        composable("map") {
+            MapScreen(onBack = { navController.navigateUp() })
+        }
     }
+}
+
+@Composable
+fun MapScreen(onBack: ()-> Unit){
+    AndroidView(
+        factory = { context ->
+            val frameLayout = FrameLayout(context).apply {
+                id = View.generateViewId() // Genera un ID único
+            }
+
+            val fragmentManager = (context as FragmentActivity).supportFragmentManager
+            val mapFragment = SupportMapFragment.newInstance()
+
+            // Configurar un callback para agregar el fragmento después de inflar la vista
+            frameLayout.post {
+                fragmentManager.beginTransaction()
+                    .replace(frameLayout.id, mapFragment, "map_fragment")
+                    .commitNow()
+
+                // Configurar el mapa
+                mapFragment.getMapAsync { googleMap ->
+                    configureMap(googleMap)
+                }
+            }
+
+            frameLayout
+        },
+        modifier = Modifier.fillMaxSize()
+    )
+}
+
+
+private fun configureMap(map: GoogleMap) {
+    val sydney = LatLng(-34.0, 151.0)
+    map.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+    map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 10f))
+
 }
 
 fun authenticateUser(

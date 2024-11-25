@@ -7,10 +7,24 @@ import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentContainerView
@@ -32,7 +46,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-class MainActivity : FragmentActivity() {
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -57,6 +71,10 @@ fun MimesaApp() {
     val dbRef = rtDB.getReference("message")
     // Example categories for the menu
     val categories = listOf("Food", "Drinks")
+    val mqttHelper = remember {
+        MqttHelper(brokerUrl = BuildConfig.HIVEMQ_URL, clientId = BuildConfig.HIVEMQ_CLIENT)
+    }
+
 
 
     NavHost(navController = navController, startDestination = "login") {
@@ -96,6 +114,9 @@ fun MimesaApp() {
                 onNavigateToMap = {
                     navController.navigate("map")
                 },
+                onNavigateToMqtt = {
+                    navController.navigate("mqtt")
+                },
                 navController
             )
         }
@@ -133,6 +154,10 @@ fun MimesaApp() {
         composable("map") {
             MapScreen(onBack = { navController.navigateUp() })
         }
+
+        composable("mqtt") {
+            MqttScreen(mqttHelper = mqttHelper)
+        }
     }
 }
 
@@ -164,6 +189,52 @@ fun MapScreen(onBack: ()-> Unit){
         modifier = Modifier.fillMaxSize()
     )
 }
+
+@Composable
+fun MqttScreen(mqttHelper: MqttHelper) {
+    val topic = remember { mutableStateOf("") }
+    val message = remember { mutableStateOf("") }
+    val receivedMessages = remember { mutableStateListOf<String>() }
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        TextField(
+            value = topic.value,
+            onValueChange = { topic.value = it },
+            label = { Text("Topic") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        TextField(
+            value = message.value,
+            onValueChange = { message.value = it },
+            label = { Text("Message") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Button(onClick = {
+                mqttHelper.subscribe(topic.value)
+            }) {
+                Text("Subscribe")
+            }
+            Button(onClick = {
+                mqttHelper.publish(topic.value, message.value)
+            }) {
+                Text("Publish")
+            }
+        }
+        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+            items(receivedMessages.size) { index ->
+                Text(text = receivedMessages[index])
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        mqttHelper.connect(onMessageReceived = { topic, message ->
+            receivedMessages.add("[$topic]: $message")
+        })
+    }
+}
+
 
 
 private fun configureMap(map: GoogleMap) {

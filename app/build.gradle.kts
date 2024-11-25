@@ -93,6 +93,9 @@ dependencies {
     // For loading and tinting drawables on older versions of the platform
     implementation("androidx.appcompat:appcompat-resources:$appcompat_version")
 
+    implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
+    implementation("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1")
+
 }
 
 secrets {

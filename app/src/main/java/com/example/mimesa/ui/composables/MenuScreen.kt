@@ -19,6 +19,7 @@ fun MenuScreen(
     onRequestOrder: () -> Unit,
     onNavigateToCart: () -> Unit,
     onNavigateToMap: () -> Unit,
+    onNavigateToMqtt: () -> Unit,
     navController: NavController
 ) {
     MimesaScaffold(
@@ -27,6 +28,7 @@ fun MenuScreen(
         onHelpRequest = onHelpRequest,
         onRequestOrder = onRequestOrder,
         onNavigateToCart = onNavigateToCart,
+        onNavigteToMqtt = onNavigateToMqtt,
         onNavigateToMap = onNavigateToMap
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {

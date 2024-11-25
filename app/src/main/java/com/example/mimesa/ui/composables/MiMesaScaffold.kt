@@ -22,6 +22,7 @@ fun MimesaScaffold(
     onRequestOrder: () -> Unit = {},
     onNavigateToCart: () -> Unit = {},
     onNavigateToMap: () -> Unit = {},
+    onNavigteToMqtt: () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
@@ -45,6 +46,9 @@ fun MimesaScaffold(
                     }
                     Button(onClick = onNavigateToMap) {
                         Text("Map")
+                    }
+                    Button(onClick = onNavigteToMqtt) {
+                        Text("Mqtt")
                     }
                 }
             )

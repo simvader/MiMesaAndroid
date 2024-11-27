@@ -11,7 +11,7 @@ import com.example.mimesa.utils.LocationUtils
 import com.google.android.gms.maps.SupportMapFragment
 
 @Composable
-fun MapScreen(onBack: () -> Unit) {
+fun MapScreen() {
     AndroidView(
         factory = { context ->
             val frameLayout = FrameLayout(context).apply { id = View.generateViewId() }

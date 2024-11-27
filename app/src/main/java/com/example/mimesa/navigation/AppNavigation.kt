@@ -76,7 +76,7 @@ fun AppNavigation() {
             onBackToMenu = { navController.navigateUp() },
             onCheckout = {navController.navigate("checkout")}
         ) }
-        composable(Routes.Checkout.route) { PaymentScreen(listOf("a", "b"), 10.0, {}, navController)}
+        composable(Routes.Checkout.route) { PaymentScreen(10.0, {}, navController)}
         composable(Routes.Login.route) { LoginScreen(
             onLoginSuccess = {
                 navController.navigate("menu")
@@ -90,7 +90,7 @@ fun AppNavigation() {
                 navController.navigate("menu")
             }
         ) }
-        composable(Routes.Map.route) { MapScreen(onBack = { navController.navigateUp() }) }
+        composable(Routes.Map.route) { MapScreen() }
         composable(Routes.Mqtt.route) { MqttScreen(mqttViewModel) }
     }
 }

@@ -1,17 +1,11 @@
 package com.example.mimesa.screens
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.view.View
 import android.widget.FrameLayout
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.example.mimesa.utils.LocationUtils
 import com.google.android.gms.maps.SupportMapFragment

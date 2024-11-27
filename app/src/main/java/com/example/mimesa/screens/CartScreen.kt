@@ -1,4 +1,4 @@
-package com.example.mimesa.ui.composables
+package com.example.mimesa.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

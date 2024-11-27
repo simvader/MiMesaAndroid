@@ -1,4 +1,4 @@
-package com.example.mimesa.ui.theme
+package com.example.mimesa.theme
 
 import android.app.Activity
 import android.os.Build

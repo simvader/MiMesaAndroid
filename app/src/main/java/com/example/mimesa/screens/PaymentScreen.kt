@@ -1,4 +1,4 @@
-package com.example.mimesa.ui.composables
+package com.example.mimesa.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.mimesa.ui.composables.SelectMenu
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

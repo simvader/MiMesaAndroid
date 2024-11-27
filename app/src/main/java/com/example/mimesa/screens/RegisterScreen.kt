@@ -1,10 +1,9 @@
-package com.example.mimesa.ui.composables
+package com.example.mimesa.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,15 +15,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.example.mimesa.authenticateUser
+import com.example.mimesa.utils.FirebaseUtils.registerUser
 
 @Composable
-fun LoginScreen(
-    onLoginSuccess: () -> Unit,
-    onRegisterClicked: () -> Unit
+fun RegisterScreen(
+    onRegisterSuccess: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Column(
@@ -34,7 +33,7 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Iniciar Sesión", style = MaterialTheme.typography.titleSmall)
+        Text(text = "Registrarse", style = MaterialTheme.typography.titleSmall)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -55,27 +54,36 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(
+            value = confirmPassword,
+            onValueChange = { confirmPassword = it },
+            label = { Text("Confirmar Contraseña") },
+            visualTransformation = PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth()
+        )
+
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = {
-                authenticateUser(email, password, onLoginSuccess) { error ->
-                    errorMessage = error
+                if (password == confirmPassword) {
+                    registerUser(email, password, onRegisterSuccess) { error ->
+                        errorMessage = error
+                    }
+                } else {
+                    errorMessage = "Las contraseñas no coinciden"
                 }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Iniciar Sesión")
+            Text("Registrarse")
         }
 
         errorMessage?.let {
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = it, color = Color.Red)
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-
-        TextButton(onClick = onRegisterClicked) {
-            Text("¿No tienes cuenta? Regístrate")
         }
     }
 }

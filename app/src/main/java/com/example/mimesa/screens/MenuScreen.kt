@@ -1,4 +1,4 @@
-package com.example.mimesa.ui.composables
+package com.example.mimesa.screens
 
 
 import androidx.compose.foundation.layout.*
@@ -9,6 +9,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.navigation.NavController
+import com.example.mimesa.ui.composables.MenuItem
+import com.example.mimesa.ui.composables.MimesaScaffold
 
 @Composable
 fun MenuScreen(

@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.play.services.maps)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.play.services.location)
     val nav_version = "2.8.3"
 
     implementation(libs.androidx.core.ktx)

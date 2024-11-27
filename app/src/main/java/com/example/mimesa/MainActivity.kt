@@ -1,6 +1,9 @@
 package com.example.mimesa
 
+import android.app.Activity
 import android.content.Context
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
@@ -26,6 +29,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentContainerView
 import androidx.navigation.compose.NavHost
@@ -37,6 +42,7 @@ import com.example.mimesa.ui.theme.MiMesaTheme
 import com.example.mimesa.ui.composables.MenuScreen
 import com.example.mimesa.ui.composables.PaymentScreen
 import com.example.mimesa.ui.composables.RegisterScreen
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -46,7 +52,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -181,6 +187,28 @@ fun MapScreen(onBack: ()-> Unit){
                 // Configurar el mapa
                 mapFragment.getMapAsync { googleMap ->
                     configureMap(googleMap)
+
+                    if (ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED) {
+                        googleMap.isMyLocationEnabled = true
+                        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+                        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                            googleMap.moveCamera(
+                                CameraUpdateFactory.newLatLngZoom(
+                                    LatLng(location.latitude, location.longitude),
+                                    15f
+                                )
+                            )
+                        }
+                    } else {
+                        ActivityCompat.requestPermissions(
+                            context as Activity,
+                            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                            REQUEST_LOCATION_PERMISSION
+                        )
+                    }
                 }
             }
 
@@ -189,6 +217,8 @@ fun MapScreen(onBack: ()-> Unit){
         modifier = Modifier.fillMaxSize()
     )
 }
+
+private const val REQUEST_LOCATION_PERMISSION = 1
 
 @Composable
 fun MqttScreen(mqttHelper: MqttHelper) {

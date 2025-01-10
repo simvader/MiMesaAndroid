@@ -2,6 +2,8 @@ package com.example.mimesa.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -23,7 +25,7 @@ fun AppNavigation() {
     val mqttHelper = remember {
         MqttHelper(brokerUrl = BuildConfig.HIVEMQ_URL, clientId = BuildConfig.HIVEMQ_CLIENT)
     }
-    NavHost(navController = navController, startDestination = Routes.Login.route) {
+    NavHost(navController = navController, startDestination = Routes.Menu.route) {
         val categories = listOf("Food", "Drinks")
         val rtDB = FirebaseDatabase.getInstance()
         val dbRef = rtDB.getReference("message")
@@ -32,49 +34,44 @@ fun AppNavigation() {
 
         composable(Routes.Menu.route) {
             MenuScreen(
-            categories = categories,
-            onAddToCart = { itemName ->
-                // Handle adding item to cart logic here
-                println("Added $itemName to cart")
-            },
-            onRemoveFromCart = { itemName ->
-                // Handle removing item from cart logic here
-                println("Removed $itemName from cart")
-            },
-            onHelpRequest = {
-                // Push a "Help" notification to Firebase
-                val helpNotification = mapOf(
-                    "type" to "help_request",
-                    "message" to "User has requested help",
-                    "timestamp" to System.currentTimeMillis()
-                )
-                dbRef.child("notifications").push().setValue(helpNotification)
-                    .addOnSuccessListener {
-                        println("Help notification sent successfully")
-                    }
-                    .addOnFailureListener {
-                        println("Failed to send help notification: ${it.message}")
-                    }
-            },
-            onRequestOrder = {
-                // Handle order request logic here
-                println("Order requested")
-            },
-            onNavigateToCart = {
-                navController.navigate("cart")
-            },
-            onNavigateToMap = {
-                navController.navigate("map")
-            },
-            onNavigateToMqtt = {
-                navController.navigate("mqtt")
-            },
-            navController
+                categories = categories,
+                onAddToCart = { itemName ->
+                    // Handle adding item to cart logic here
+                    println("Added $itemName to cart")
+                },
+                onRemoveFromCart = { itemName ->
+                    // Handle removing item from cart logic here
+                    println("Removed $itemName from cart")
+                },
+                onHelpRequest = {
+                    // Push a "Help" notification to Firebase
+                    val helpNotification = mapOf(
+                        "type" to "help_request",
+                        "message" to "User has requested help",
+                        "timestamp" to System.currentTimeMillis()
+                    )
+                    dbRef.child("notifications").push().setValue(helpNotification)
+                        .addOnSuccessListener {
+                            println("Help notification sent successfully")
+                        }
+                        .addOnFailureListener {
+                            println("Failed to send help notification: ${it.message}")
+                        }
+                },
+                onRequestOrder = {
+                    // Handle order request logic here
+                    println("Order requested")
+                },
+                onNavigateToCart = {
+                    navController.navigate("cart")
+                },
+                navController,
             )
         }
         composable(Routes.Cart.route) { CartScreen(
             onBackToMenu = { navController.navigateUp() },
-            onCheckout = {navController.navigate("checkout")}
+            onCheckout = {navController.navigate("checkout")},
+            navController
         ) }
         composable(Routes.Checkout.route) { PaymentScreen(10.0, {}, navController)}
         composable(Routes.Login.route) { LoginScreen(
